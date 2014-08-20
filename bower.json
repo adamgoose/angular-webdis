@@ -1,0 +1,27 @@
+{
+  "name": "angular-webdis",
+  "version": "0.1.0",
+  "authors": [
+    "adam@enge.me"
+  ],
+  "description": "Angular Service Provider for Interacting with the Redis PubSub System with Webdis",
+  "main": "./angular-webdis.js",
+  "keywords": [
+    "angular",
+    "AngularJS",
+    "provider",
+    "service",
+    "angular-webdis",
+    "Webdis",
+    "Redis",
+    "PubSub"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+  ],
+  "dependencies": {
+    "angular": "~1.2.0"
+  },
+  "devDependencies": {}
+}

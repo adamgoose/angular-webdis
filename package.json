@@ -1,0 +1,23 @@
+{
+  "author": "Adam Engebretson",
+  "contributors": [
+    {
+      "name": "Adam Engebretson",
+      "url": "https://github.com/adamgoose"
+    }
+  ],
+  "name": "angular-webdis",
+  "version": "0.1.0",
+  "description": "Angular Service Provider for Interacting with the Redis PubSub System with Webdis",
+  "homepage": "https://github.com/adamgoose/angular-webdis",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adamgoose/angular-webdis.git"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.7",
+    "gulp-rename": "^1.2.0",
+    "gulp-ng-annotate": "^0.3.0",
+    "gulp-uglify": "^0.3.1"
+  }
+}

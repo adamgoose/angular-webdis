@@ -17,9 +17,6 @@
     "PubSub"
   ],
   "license": "MIT",
-  "ignore": [
-    "**/.*",
-  ],
   "dependencies": {
     "angular": "~1.2.0"
   },

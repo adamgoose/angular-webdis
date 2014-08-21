@@ -4,7 +4,7 @@ Angular-Webdis is an angular provider that allows you to subscribe to [Redis](ht
 
 ## Installation
 
-Angular-Webdis can be installed by either downloading `angular-webdis.min.js` from the `dist` directory in this repository, or with `grunt install angular-webdis`.
+Angular-Webdis can be installed by either downloading `angular-webdis.min.js` from the `dist` directory in this repository, or with `bower install angular-webdis`.
 
 ## Installing Webdis (Laravel Forge Users)
 
@@ -16,7 +16,7 @@ You can configure the provider like so:
 
     myApp = angular.module('my-app', ['adamgoose-webdis']);
 
-    myApp.configure(['WebdisProvider', function(WebdisProvider)
+    myApp.config(['WebdisProvider', function(WebdisProvider)
       {
         // Your Webdis Host
         WebdisProvider.setHost('example.com');

@@ -15,6 +15,7 @@ angular.module('adamgoose.webdis', [])
   .provider('Webdis', function () {
     this.host = null;
     this.port = '7379';
+    this.auth = false;
 
     this.setHost = function (host) {
       this.host = host;
@@ -24,9 +25,17 @@ angular.module('adamgoose.webdis', [])
       this.port = port;
     };
 
+    this.setAuth = function (user, pass) {
+      this.auth = {
+        user: user,
+        pass: pass
+      };
+    };
+
     this.$get = function () {
       var host = this.host,
-        port = this.port;
+        port = this.port,
+        auth = this.auth;
 
       return {
         xhr: new XMLHttpRequest(),
@@ -40,6 +49,11 @@ angular.module('adamgoose.webdis', [])
           this.xhr.open('GET', this.create_subscribe_url(channel), true);
           this.xhr.onreadystatechange = this.receive;
           this.xhr.parent = this;
+
+          if (auth) {
+            var header = "Basic " + btoa(auth.user + ':' + auth.pass);
+            this.xhr.setRequestHeader("Authorization", header);
+          }
 
           this.scope = $scope;
 

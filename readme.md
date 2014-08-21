@@ -18,9 +18,34 @@ You can configure the provider like so:
 
     myApp.configure(['WebdisProvider', function(WebdisProvider)
       {
-        WebdisProvider.setHost('example.com'); // Your Webdis Host
-        WebdisProvider.setPort(7379);          // Your Webdis Port (7379 by default)
+        // Your Webdis Host
+        WebdisProvider.setHost('example.com');
+
+        // Your Webdis Port (7379 by default)
+        WebdisProvider.setPort(7379);
+
+        // Required if your Webdis ACL requires HTTP Basic Authentication
+        WebdisProvider.setAuth('user', 'pass');
       }]);
+
+### .setHost(host)
+
+Sets the host for the Webdis Requests
+
+- **host**: Your Webdis Host
+
+### .setPort(port)
+
+Sets the port for the Webdis Requests
+
+- **port**: Your Webdis Post (default 7379)
+
+### .setAuth(user, pass)
+
+Sets the HTTP Basic Authentication for the Webdis Requests. This is required if your Webdis ACL requires HTTP Basic Authentication.
+
+- **user**: Username
+- **pass**: Password
 
 ## Usage
 
@@ -30,13 +55,15 @@ To subscribe to a channel, inject `Webdis` to your controllers, and use the prov
     {
 
       Webdis.subscribe('my-channel', $scope)
+
         // Optional Subscribe Callback Method
         .onSubscribe(function(data, channel)
         {
           console.log('Subscribed to channel '+channel);
         })
+
         // Required Message Callback Method
-        // This method actually triggers the subscription XHR Request
+        // This method triggers the subscription XHR Request
         .onMessage(function(data, channel)
         {
           console.log('Message received on channel '+channel+': '+data);
@@ -62,7 +89,7 @@ Register a callback for subscription success.
 
 ### .onMessage(data, channel)
 
-Register a callback for subscription messages. This method actually triggers the subscription XHR Request.
+Register a callback for subscription messages. This method triggers the subscription XHR Request.
 
 - **data**: Message data.
 - **channel**: Channel subscribed to.

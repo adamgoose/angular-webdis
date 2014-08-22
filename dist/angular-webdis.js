@@ -60,8 +60,13 @@
       this.callbacks[channel] = callback;
       this.scopes[channel] = scope;
 
-      if(this.socket.readyState == 1)
-        this.socket.send(angular.toJson(['SUBSCRIBE', channel]));
+      if(this.socket.readyState == 1) {
+        var socket = this.socket,
+          timeout = this.callbacks.length * 10;
+        $timeout(function () {
+          socket.send(angular.toJson(['SUBSCRIBE', channel]));
+        }, timeout);
+      }
     }
   }]);
 

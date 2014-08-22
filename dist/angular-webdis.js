@@ -8,11 +8,11 @@
  * Licensed under the MIT License (MIT).
  */
 
-'use strict';
+;(function(module)
+{
+  'use strict';
 
-angular.module('adamgoose.webdis', [])
-
-  .service('WebdisSocket', ['$timeout', function ($timeout) {
+  module.service('WebdisSocket', ['$timeout', function ($timeout) {
     this.callbacks = {};
     this.scopes = {};
     this.init = function (host, port) {
@@ -20,11 +20,13 @@ angular.module('adamgoose.webdis', [])
       var me = this;
 
       me.socket.onopen = function () {
+        var command = ["SUBSCRIBE"];
+
         angular.forEach(me.callbacks, function (callback, channel) {
-          $timeout(function () {
-            me.socket.send(angular.toJson(["SUBSCRIBE", channel]));
-          }, 5);
+          command.push(channel);
         });
+
+        me.socket.send(angular.toJson(command));
       };
 
       me.socket.onmessage = function (e) {
@@ -58,9 +60,9 @@ angular.module('adamgoose.webdis', [])
       this.callbacks[channel] = callback;
       this.scopes[channel] = scope;
     }
-  }])
+  }]);
 
-  .provider('Webdis', function () {
+  module.provider('Webdis', function () {
     this.host = null;
     this.port = '7379';
 
@@ -80,4 +82,5 @@ angular.module('adamgoose.webdis', [])
     }];
 
   })
-;
+
+})(angular.module('adamgoose.webdis', []));

@@ -17,4 +17,9 @@ gulp.task('app-angular', function()
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('default', ['app-angular']);
+gulp.task('watch', function()
+{
+  gulp.watch('angular-webdis.js', ['app-angular']);
+});
+
+gulp.task('default', ['app-angular', 'watch']);

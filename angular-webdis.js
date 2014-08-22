@@ -12,10 +12,57 @@
 
 angular.module('adamgoose.webdis', [])
 
+  .service('WebdisSocket', ['$timeout', function ($timeout) {
+    this.callbacks = {};
+    this.scopes = {};
+    this.init = function (host, port) {
+      this.socket = new WebSocket('ws://' + host + ':' + port + '/');
+      var me = this;
+
+      me.socket.onopen = function () {
+        angular.forEach(me.callbacks, function (callback, channel) {
+          $timeout(function () {
+            me.socket.send(angular.toJson(["SUBSCRIBE", channel]));
+          }, 5);
+        });
+      };
+
+      me.socket.onmessage = function (e) {
+        var data = angular.fromJson(e.data)["SUBSCRIBE"];
+        var event = data[0],
+          channel = data[1],
+          message = data[2];
+
+        if (event == 'message') {
+          me.dispatchEvents(channel, message);
+        }
+
+      };
+      return this;
+    };
+    this.dispatchEvents = function (channel, message) {
+      var json;
+      try {
+        json = angular.fromJson(message);
+      }
+      catch (ex) {
+        json = message;
+      }
+
+      this.callbacks[channel](json, channel);
+
+      if (!angular.isUndefined(this.scopes[channel]))
+        this.scopes[channel].$apply();
+    };
+    this.subscribe = function (channel, callback, scope) {
+      this.callbacks[channel] = callback;
+      this.scopes[channel] = scope;
+    }
+  }])
+
   .provider('Webdis', function () {
     this.host = null;
     this.port = '7379';
-    this.auth = false;
 
     this.setHost = function (host) {
       this.host = host;
@@ -25,87 +72,12 @@ angular.module('adamgoose.webdis', [])
       this.port = port;
     };
 
-    this.setAuth = function (user, pass) {
-      this.auth = {
-        user: user,
-        pass: pass
-      };
-    };
-
-    function Subscription(host, port, auth, channel, $scope) {
-      this.xhr = new XMLHttpRequest();
-      this.received = 0;
-      this.scope = null;
-      this.messageCallback = function (data, channel) {
-      };
-      this.subscribeCallback = function (data, channel) {
-      };
-      this.create_subscribe_url = function (channel) {
-        return 'http://' + host + ':' + port + '/SUBSCRIBE/' + channel;
-      };
-      this.receive = function () {
-        if (this.readyState == 3) {
-          var response = this.responseText,
-            chunk = response.slice(this.parent.received);
-          this.parent.received = response.length;
-          chunk = angular.fromJson(chunk)['SUBSCRIBE'];
-
-          this.parent.dispatchCallbacks(chunk);
-        }
-      };
-      this.dispatchCallbacks = function (chunk) {
-        var event = chunk[0],
-          channel = chunk[1],
-          data = chunk[2];
-
-        switch (event) {
-          case 'subscribe':
-            this.subscribeCallback(data, channel);
-            break;
-          case 'message':
-            this.messageCallback(data, channel);
-            break;
-        }
-
-        if (this.scope != null)
-          this.scope.$apply();
-      };
-      this.onSubscribe = function (callback) {
-        this.subscribeCallback = callback;
-
-        return this;
-      };
-      this.onMessage = function (callback) {
-        this.messageCallback = callback;
-        this.xhr.send(null);
-      };
-
-      // Construction
-      this.xhr.open('GET', this.create_subscribe_url(channel), true);
-      this.xhr.onreadystatechange = this.receive;
-      this.xhr.parent = this;
-
-      if (auth) {
-        var header = "Basic " + btoa(auth.user + ':' + auth.pass);
-        this.xhr.setRequestHeader("Authorization", header);
-      }
-
-      this.scope = $scope;
-
-      return this;
-    }
-
-    this.$get = function () {
+    this.$get = ['WebdisSocket', function (WebdisSocket) {
       var host = this.host,
-        port = this.port,
-        auth = this.auth;
+        port = this.port;
 
-      return {
-        subscribe: function(channel, scope)
-        {
-          return new Subscription(host, port, auth, channel, scope);
-        }
-      }
-    }
+      return WebdisSocket.init(host, port);
+    }];
 
-  });
+  })
+;

@@ -1,6 +1,6 @@
 # Angular-Webdis
 
-Angular-Webdis is an angular provider that allows you to subscribe to [Redis](http://redis.io/) [PubSub](http://redis.io/topics/pubsub) channels through [Webdis](http://webd.is/).
+Angular-Webdis is an angular provider that allows you to subscribe to [Redis](http://redis.io/) [PubSub](http://redis.io/topics/pubsub) channels via [Webdis](http://webd.is/) using WebSockets.
 
 ## Installation
 
@@ -23,29 +23,19 @@ You can configure the provider like so:
 
         // Your Webdis Port (7379 by default)
         WebdisProvider.setPort(7379);
-
-        // Required if your Webdis ACL requires HTTP Basic Authentication
-        WebdisProvider.setAuth('user', 'pass');
       }]);
 
-### .setHost(host)
+### WebdisProvider.setHost(host)
 
 Sets the host for the Webdis Requests
 
 - **host**: Your Webdis Host
 
-### .setPort(port)
+### WebdisProvider.setPort(port)
 
 Sets the port for the Webdis Requests
 
 - **port**: Your Webdis Post (default 7379)
-
-### .setAuth(user, pass)
-
-Sets the HTTP Basic Authentication for the Webdis Requests. This is required if your Webdis ACL requires HTTP Basic Authentication.
-
-- **user**: Username
-- **pass**: Password
 
 ## Usage
 
@@ -54,45 +44,31 @@ To subscribe to a channel, inject `Webdis` to your controllers, and use the prov
     app.controller('DemoCtl', ['$scope', 'Webdis', function($scope, Webdis)
     {
 
-      Webdis.subscribe('my-channel', $scope)
-
-        // Optional Subscribe Callback Method
-        .onSubscribe(function(data, channel)
-        {
-          console.log('Subscribed to channel '+channel);
-        })
-
-        // Required Message Callback Method
-        // This method triggers the subscription XHR Request
-        .onMessage(function(data, channel)
+      Webdis.subscribe('my-channel', function(data, channel)
         {
           console.log('Message received on channel '+channel+': '+data);
-        });
+        }, $scope);
 
     }]);
 
 ## API
 
-### .subscribe(channel, scope)
+### Webdis.subscribe(channel, callback, scope)
 
 Subscribe to a channel.
 
 - **channel**: Channel to subscribe to.
+- **callback**: Function to handle the callback. See below for more documentation.
 - **scope**: Pass in your scope, and we'll run `$scope.$apply()` after your callbacks for you.
 
-### .onSubscribe(data, channel)
+#### callback(message, channel)
 
-Register a callback for subscription success.
+The callback that handles messages sent to a particular subscribed channel.
 
-- **data**: returns 1 when subscription is a success.
-- **channel**: Channel subscribed to.
+- **message**: JSON Object or String message data
+- **channel**: Channel on which the message was sent
 
-### .onMessage(data, channel)
-
-Register a callback for subscription messages. This method triggers the subscription XHR Request.
-
-- **data**: Message data.
-- **channel**: Channel subscribed to.
+> **Note**: If you do not pass your scope to the `.subscribe()` method, you will need to run `$scope.$apply()` in your callbacks if you make changes to your scope within the callback.
 
 ## Contributing
 

@@ -53,12 +53,15 @@
 
       this.callbacks[channel](json, channel);
 
-      if (!angular.isUndefined(this.scopes[channel]))
+      if (angular.isDefined(this.scopes[channel]))
         this.scopes[channel].$apply();
     };
     this.subscribe = function (channel, callback, scope) {
       this.callbacks[channel] = callback;
       this.scopes[channel] = scope;
+
+      if(this.socket.readyState == 1)
+        this.socket.send(angular.toJson(['SUBSCRIBE', channel]));
     }
   }]);
 

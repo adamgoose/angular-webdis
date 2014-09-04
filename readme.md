@@ -14,16 +14,18 @@ Laravel Forge users can use the Laravel Forge Recipe at [ForgeRecipes.com](http:
 
 You can configure the provider like so:
 
-    myApp = angular.module('my-app', ['adamgoose-webdis']);
+```js
+myApp = angular.module('my-app', ['adamgoose-webdis']);
 
-    myApp.config(['WebdisProvider', function(WebdisProvider)
-      {
-        // Your Webdis Host
-        WebdisProvider.setHost('example.com');
+myApp.config(['WebdisProvider', function(WebdisProvider)
+  {
+    // Your Webdis Host
+    WebdisProvider.setHost('example.com');
 
-        // Your Webdis Port (7379 by default)
-        WebdisProvider.setPort(7379);
-      }]);
+    // Your Webdis Port (7379 by default)
+    WebdisProvider.setPort(7379);
+  }]);
+```
 
 ### WebdisProvider.setHost(host)
 
@@ -41,15 +43,17 @@ Sets the port for the Webdis Requests
 
 To subscribe to a channel, inject `Webdis` to your controllers, and use the provided methods (see below) to subscribe to channels.
 
-    app.controller('DemoCtl', ['$scope', 'Webdis', function($scope, Webdis)
+```js
+app.controller('DemoCtl', ['$scope', 'Webdis', function($scope, Webdis)
+{
+
+  Webdis.subscribe('my-channel', function(data, channel)
     {
+      console.log('Message received on channel '+channel+': '+data);
+    }, $scope);
 
-      Webdis.subscribe('my-channel', function(data, channel)
-        {
-          console.log('Message received on channel '+channel+': '+data);
-        }, $scope);
-
-    }]);
+}]);
+```
 
 ## API
 

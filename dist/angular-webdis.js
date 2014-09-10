@@ -29,6 +29,13 @@
         me.socket.send(angular.toJson(command));
       };
 
+      me.socket.onclose = function( ) {
+        $timeout(function () {
+          me.init(host, port);
+          console.log("Connection closed, trying to reconnect!");
+        }, 1500);
+      };
+
       me.socket.onmessage = function (e) {
         var data = angular.fromJson(e.data)["SUBSCRIBE"];
         var event = data[0],

@@ -15,7 +15,7 @@ Laravel Forge users can use the Laravel Forge Recipe at [ForgeRecipes.com](http:
 You can configure the provider like so:
 
 ```js
-myApp = angular.module('my-app', ['adamgoose-webdis']);
+myApp = angular.module('my-app', ['adamgoose.webdis']);
 
 myApp.config(['WebdisProvider', function(WebdisProvider)
   {

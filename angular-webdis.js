@@ -74,7 +74,7 @@
           socket.send(angular.toJson(['SUBSCRIBE', channel]));
         }, timeout);
       }
-    }
+    };
   }]);
 
   module.provider('Webdis', function () {
@@ -96,6 +96,6 @@
       return WebdisSocket.init(host, port);
     }];
 
-  })
+  });
 
 })(angular.module('adamgoose.webdis', []));

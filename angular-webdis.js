@@ -12,14 +12,18 @@
 {
   'use strict';
 
-  module.service('WebdisSocket', ['$timeout', function ($timeout) {
+  module.service('WebdisSocket', ['$timeout', '$rootScope', function ($timeout, $rootScope) {
     this.callbacks = {};
     this.scopes = {};
-    this.init = function (host, port) {
+    this.init = function (host, port, broadcastNamespace) {
       this.socket = new WebSocket('ws://' + host + ':' + port + '/');
+      this.broadcastNamespace = broadcastNamespace;
+
       var me = this;
 
       me.socket.onopen = function () {
+        $rootScope.$broadcast(me.broadcastNamespace, 'onopen');
+
         var command = ["SUBSCRIBE"];
 
         angular.forEach(me.callbacks, function (callback, channel) {
@@ -30,6 +34,8 @@
       };
 
       me.socket.onclose = function( ) {
+        $rootScope.$broadcast(me.broadcastNamespace, 'onclose');
+
         $timeout(function () {
           me.init(host, port);
           console.log("Connection closed, trying to reconnect!");
@@ -80,6 +86,7 @@
   module.provider('Webdis', function () {
     this.host = null;
     this.port = '7379';
+    this.broadcastNamespace = 'WebdisSocket';
 
     this.setHost = function (host) {
       this.host = host;
@@ -89,11 +96,16 @@
       this.port = port;
     };
 
+    this.setBroadcastNamespace = function (broadcastNamespace) {
+      this.broadcastNamespace = broadcastNamespace;
+    };
+
     this.$get = ['WebdisSocket', function (WebdisSocket) {
       var host = this.host,
-        port = this.port;
+        port = this.port,
+        broadcastNamespace = this.broadcastNamespace;
 
-      return WebdisSocket.init(host, port);
+      return WebdisSocket.init(host, port, broadcastNamespace);
     }];
 
   });
